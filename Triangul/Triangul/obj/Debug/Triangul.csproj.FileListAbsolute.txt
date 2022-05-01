@@ -1,0 +1,9 @@
+/home/bdobosevych/RiderProjects/Triangul/Triangul/bin/Debug/Triangul.exe
+/home/bdobosevych/RiderProjects/Triangul/Triangul/bin/Debug/Triangul.pdb
+/home/bdobosevych/RiderProjects/Triangul/Triangul/bin/Debug/MathNet.Numerics.xml
+/home/bdobosevych/RiderProjects/Triangul/Triangul/bin/Debug/Triangle.pdb
+/home/bdobosevych/RiderProjects/Triangul/Triangul/obj/Debug/Triangul.csprojAssemblyReference.cache
+/home/bdobosevych/RiderProjects/Triangul/Triangul/obj/Debug/Triangul.csproj.CoreCompileInputs.cache
+/home/bdobosevych/RiderProjects/Triangul/Triangul/obj/Debug/Triangul.csproj.CopyComplete
+/home/bdobosevych/RiderProjects/Triangul/Triangul/obj/Debug/Triangul.exe
+/home/bdobosevych/RiderProjects/Triangul/Triangul/obj/Debug/Triangul.pdb

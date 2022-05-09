@@ -14,184 +14,166 @@ namespace Verification
         List<double> min_areas;
         List<double> list_normaL2;
         List<double> list_normaW2;
+        List<double> list_normaW2_er;
+        List<double> list_normaL2_er;
+        List<double> list_e;
 
         List<DataVerification> verifications;
 
         public ConvergenceRate(List<System.Windows.Point> polygonPoints, Equation equation)
         {
             min_areas = new List<double>();
-            double area = 0.1;
-            min_areas.Add(area);
-            min_areas.Add(area/2);
-            min_areas.Add(area/4);
-            min_areas.Add(area/6);
-            min_areas.Add(area/8);
-            min_areas.Add(area/10);
-            min_areas.Add(area/12);
+            min_areas.Add(0.035);
+            // min_areas.Add(0.019);
+            min_areas.Add(0.01);
+            // min_areas.Add(0.005);
+            min_areas.Add(0.00245);
+            // min_areas.Add(0.001265);
+            min_areas.Add(0.00063);
+            
+            
 
 
             list_normaL2 = new List<double>();
             list_normaW2 = new List<double>();
+            list_normaL2_er = new List<double>();
+            list_normaW2_er = new List<double>();
+                
+            list_e = new List<double>();
             verifications = new List<DataVerification>();
 
             for (int i = 0; i < min_areas.Count; i++)
-            {
+            {;
                 QualityOptions options = new QualityOptions();
                 options.MinimumAngle = 25;
                 options.MaximumArea = min_areas[i];
                 Translator translator = new Translator(polygonPoints, options);
                 // translator.FileOutput();
-
+                
                 DataAdapter FEMadapter = new DataAdapter(translator.Mesh, translator.PolygonIn, equation);
                 // FEMadapter.FileOutput();
                 DataVerification verification = new DataVerification(FEMadapter);
                 verifications.Add(verification);
+                double l2 = verification.L2Norm(false);
+                double w2 = verification.W2Norm(false);
+                list_normaL2.Add(l2);
+                list_normaW2.Add(w2);
+                double l2_er = verification.L2Norm(true);
+                double w2_er = verification.W2Norm(true);
+                list_normaL2_er.Add( l2_er);
+                list_normaW2_er.Add( w2_er);
+                
+                double area = verification.GetMaxTriangleArea();
+                double error = verification.GetError();
+               
+                list_e.Add(verification.GetError());
+                
 
-                list_normaW2.Add(verification.W2Norm());
-                list_normaL2.Add(verification.L2Norm());
+
             }
         }
-
-        public List<double> get_list_normaL2()
+        
+        public void NormaL()
         {
             using (System.IO.StreamWriter file =
                    new System.IO.StreamWriter(
-                       @"/home/bdobosevych/RiderProjects/Triangul/Triangul/file/verification/NormaL2.txt"))
+                       @"/home/bdobosevych/RiderProjects/Triangul/Triangul/file/verification/Norma.txt"))
             {
+                file.WriteLine("Count" + ";\t" + "L2" + ";\t" + "W2" );
                 for (int i = 0; i < min_areas.Count; i++)
                 {
-                    file.WriteLine(verifications[i].FEMData.Mesh.Triangles.Count + ";\t" + list_normaL2[i]);
+                    file.WriteLine(verifications[i].FEMData.Mesh.Triangles.Count + ";\t" + list_normaL2[i] + ";\t" + list_normaW2[i] );
                 }
             }
-
-            return list_normaL2;
         }
-
-        public List<double> get_list_normaW2()
+        
+        public void NormaLEr()
         {
             using (System.IO.StreamWriter file =
                    new System.IO.StreamWriter(
-                       @"/home/bdobosevych/RiderProjects/Triangul/Triangul/file/verification/NormaW2.txt"))
+                       @"/home/bdobosevych/RiderProjects/Triangul/Triangul/file/verification/NormaEr.txt"))
             {
+                file.WriteLine("Count" + ";\t" + "L2_er" + ";\t" + "W2_er" );
                 for (int i = 0; i < min_areas.Count; i++)
                 {
-                    file.WriteLine(verifications[i].FEMData.Mesh.Triangles.Count + ";\t" + list_normaW2[i]);
+                    file.WriteLine(verifications[i].FEMData.Mesh.Triangles.Count + ";\t" + list_normaL2_er[i] + ";\t" + list_normaW2_er[i] );
                 }
             }
-
-            return list_normaW2;
         }
-
-        public List<double> EitkenL2()
+        
+        public void Exact()
         {
-            List<double> p = new List<double>();
+            List<double> p_L2 = new List<double>();
+            for (int i = 0; i < list_normaL2_er.Count - 1; i++)
+            {
+                p_L2.Add(Math.Abs(Math.Log(list_normaL2_er[i]) - Math.Log(list_normaL2_er[i + 1])) / Math.Log(2));
+            }
+            List<double> p_W2 = new List<double>();
+            for (int i = 0; i < list_normaW2_er.Count - 1; i++)
+            {
+                p_W2.Add(Math.Abs(Math.Log(list_normaW2_er[i]) - Math.Log(list_normaW2_er[i + 1])) / Math.Log(2));
+            }
+
+
+            using (System.IO.StreamWriter file =
+                   new System.IO.StreamWriter(
+                       @"/home/bdobosevych/RiderProjects/Triangul/Triangul/file/verification/Exact.txt"))
+            {
+                file.WriteLine("Count" + ";\t" + "p_L2" + ";\t" + "p_W2" );
+                for (int i = 0; i < min_areas.Count; i++)
+                {
+                    string text = "-;\t-; ";
+                    if (i != 0)
+                    {
+                        text =  p_L2[i - 1].ToString() + ";\t" + p_W2[i - 1].ToString() ;
+                    }
+
+                    file.WriteLine(verifications[i].FEMData.Mesh.Triangles.Count + ";\t" + text);
+                }
+            }
+            
+        }
+        public void Eitken()
+        {
+            List<double> p_L2 = new List<double>();
             for (int i = 0; i < list_normaL2.Count - 2; i++)
             {
                 //p.Add(Abs(Log(list_normaL2[i]) - Log(list_normaL2[i + 1])) / Log(2));
-                p.Add(Math.Abs(Math.Log(Math.Abs(list_normaL2[i + 1] - list_normaL2[i])) -
-                               Math.Log(Math.Abs(list_normaL2[i + 2] - list_normaL2[i + 1]))) / Math.Log(2));
+                p_L2.Add(
+                    (Math.Log(list_normaL2[i + 1] - list_normaL2[i]) - Math.Log(list_normaL2[i + 2] - list_normaL2[i + 1])) 
+                         / Math.Log(2)
+                    );
             }
-
-            using (System.IO.StreamWriter file =
-                   new System.IO.StreamWriter(
-                       @"/home/bdobosevych/RiderProjects/Triangul/Triangul/file/verification/EitkenL2.txt"))
-            {
-                for (int i = 0; i < min_areas.Count; i++)
-                {
-                    string text = " - ";
-                    if (i > 1)
-                    {
-                        text = p[i - 2].ToString();
-                    }
-
-                    file.WriteLine(verifications[i].FEMData.Mesh.Triangles.Count + ";\t" + text);
-                }
-            }
-
-            return p;
-        }
-
-        public List<double> ExactL2()
-        {
-            List<double> p = new List<double>();
-            for (int i = 0; i < list_normaL2.Count - 1; i++)
-            {
-                p.Add(Math.Abs(Math.Log(list_normaL2[i]) - Math.Log(list_normaL2[i + 1])) / Math.Log(2));
-            }
-
-            using (System.IO.StreamWriter file =
-                   new System.IO.StreamWriter(
-                       @"/home/bdobosevych/RiderProjects/Triangul/Triangul/file/verification/ExactL2.txt"))
-            {
-                for (int i = 0; i < min_areas.Count; i++)
-                {
-                    string text = " - ";
-                    if (i != 0)
-                    {
-                        text = p[i - 1].ToString();
-                    }
-
-                    file.WriteLine(verifications[i].FEMData.Mesh.Triangles.Count + ";\t" + text);
-                }
-            }
-
-            return p;
-        }
-
-        public List<double> EitkenW2()
-        {
-            List<double> p = new List<double>();
+            
+            List<double> p_W2 = new List<double>();
             for (int i = 0; i < list_normaW2.Count - 2; i++)
             {
                 //p.Add(Abs(Log(list_normaL2[i]) - Log(list_normaL2[i + 1])) / Log(2));
-                p.Add(Math.Abs(Math.Log(Math.Abs(list_normaW2[i + 1] - list_normaW2[i])) -
-                               Math.Log(Math.Abs(list_normaW2[i + 2] - list_normaW2[i + 1]))) / Math.Log(2));
+                p_W2.Add((Math.Log(list_normaW2[i + 1] - list_normaW2[i]) -
+                                  Math.Log(list_normaW2[i + 2] - list_normaW2[i + 1])) / Math.Log(4));
             }
+            
 
             using (System.IO.StreamWriter file =
                    new System.IO.StreamWriter(
-                       @"/home/bdobosevych/RiderProjects/Triangul/Triangul/file/verification/EitkenW2.txt"))
+                       @"/home/bdobosevych/RiderProjects/Triangul/Triangul/file/verification/Eitken.txt"))
             {
+                file.WriteLine("Count" + ";\t" + "p_L2" + ";\t" + "p_W2" );
                 for (int i = 0; i < min_areas.Count; i++)
                 {
-                    string text = " - ";
+                    string text = "-;\t-; ";
                     if (i > 1)
                     {
-                        text = p[i - 2].ToString();
+                        text = p_L2[i - 2].ToString() + ";\t" + p_W2[i - 2].ToString() ;
                     }
 
                     file.WriteLine(verifications[i].FEMData.Mesh.Triangles.Count + ";\t" + text);
                 }
             }
-
-            return p;
         }
 
-        public List<double> ExactW2()
-        {
-            List<double> p = new List<double>();
-            for (int i = 0; i < list_normaW2.Count - 1; i++)
-            {
-                p.Add(Math.Abs(Math.Log(list_normaW2[i]) - Math.Log(list_normaW2[i + 1])) / Math.Log(2));
-            }
+       
 
-            using (System.IO.StreamWriter file =
-                   new System.IO.StreamWriter(
-                       @"/home/bdobosevych/RiderProjects/Triangul/Triangul/file/verification/ExactW2.txt"))
-            {
-                for (int i = 0; i < min_areas.Count; i++)
-                {
-                    string text = " - ";
-                    if (i != 0)
-                    {
-                        text = p[i - 1].ToString();
-                    }
-
-                    file.WriteLine(verifications[i].FEMData.Mesh.Triangles.Count + ";\t" + text);
-                }
-            }
-
-            return p;
-        }
+     
     }
 }

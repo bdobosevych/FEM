@@ -32,11 +32,12 @@ namespace Triangulation
 
         public double L2;
         public double W2;
-        public double L2alt;
         public DataVerification(DataAdapter data)
         {
 
-            FEMData = data; double step = (b - a) / n;
+            FEMData = data;
+            n = FEMData.Mesh.Triangles.Count;
+            double step = (b - a) / n;
             trianglesOnPoints = new Triangle[n + 1];
             Uh = new double[n + 1];
             U0 = new double[n + 1];
@@ -67,19 +68,26 @@ namespace Triangulation
         {
             double result;
             
-            // 1 1 1 3
-            //result = (-3 * Math.Pow(Math.E, (1 - point.X)) - 3 * Math.Pow(Math.E, point.X) + 3 + 3 * Math.E) / (1 + Math.E);
-
-            result = -10 * Math.Pow(point.X, 4);
+            //  3 4 0 2
+             // result = point.X / 3.0 - Math.Pow(point.X, 2) / 3.0;
+            
+             // 1 1 1 3
+            result = (-3 * Math.Pow(Math.E, (1 - point.X)) - 3 * Math.Pow(Math.E, point.X) + 3 + 3 * Math.E) / (1 + Math.E);
+            
+            // 1 1 0 -7sin(x)
+            // result = -10 * Math.Pow(point.X, 4);
             return result;
         }
         public double MyFunctionDerivative(Point point)
         {
             double result;
+            //
+             // result = (1.0 / 3.0) - point.X * (2.0 / 3.0);
             // 1 1 1 3
-            //result = -(3 * Math.Pow(Math.E, -point.X) * (Math.Pow(Math.E, 2 * point.X) - Math.E) * Math.Log(Math.E)) / (Math.E + 1); 
-
-            result = -10 * 4 * Math.Pow(point.X, 3);
+             result = -(3 * Math.Pow(Math.E, -point.X) * (Math.Pow(Math.E, 2 * point.X) - Math.E) * Math.Log(Math.E)) / (Math.E + 1); 
+            
+            // 1 1 0 -7sin(x)
+            // result = -10 * 4 * Math.Pow(point.X, 3);
             return result;
         }
         public double[] GetExact()
@@ -120,7 +128,7 @@ namespace Triangulation
         
             return result;
         }
-        public double L2Norm()
+        public double L2Norm(bool flag)
         {
             double result = 0;
             double sum = 0;
@@ -130,34 +138,52 @@ namespace Triangulation
                 Point center = CenterOfTriangle(e);
                 double U = MyFunction(center);
                 double Uh = UhOnPoint(center, e);
-                
 
-                ErrorInCenterPoint[k] = Math.Abs(U - Uh);
-                sum +=Math.Pow(U-Uh,2.0)* CalculateArea(e);
+                double add_com;
+                if (flag)
+                {
+                    ErrorInCenterPoint[k] = Math.Abs(U - Uh);
+                    add_com=Math.Pow(U-Uh,2.0)* CalculateArea(e);
+                }
+                else
+                {
+                    add_com=Math.Pow(Uh,2.0)* CalculateArea(e);
+                }
+
+                sum += add_com;
 
 
                 k++;
             }
-            L2 = sum; ;
+            L2 = sum; 
             result = Math.Sqrt(sum);
             
             return result;
         }
-        public double W2Norm()
+        public double W2Norm(bool flag)
         {
-            double result;
-            if (L2.Equals(null))
-            {
-                L2Norm();
-                result = L2;
-            }
-            else result = L2;
+            
+            L2Norm(flag);
+            double result = 0;
+
             //result = L2Norm();
             double sum = 0;
             foreach(Triangle e in FEMData.Mesh.Triangles)
             {
                 Point center = CenterOfTriangle(e);
-                sum += Math.Pow((MyFunctionDerivative(center) -  UhDerivative(e)),2) * CalculateArea(e);
+                double U = MyFunction(center);
+                double Uh = UhOnPoint(center, e);
+                double add_com;
+                if (flag)
+                {
+                    add_com=Math.Pow(U-Uh,2.0)* CalculateArea(e) + Math.Pow((MyFunctionDerivative(center) -  UhDerivative(e)),2) * CalculateArea(e);
+                }
+                else
+                {
+                    add_com=Math.Pow(Uh,2.0)* CalculateArea(e) + Math.Pow(UhDerivative(e),2) * CalculateArea(e);
+                }
+
+                sum += add_com;
             }
             result += sum;
             W2 = result;

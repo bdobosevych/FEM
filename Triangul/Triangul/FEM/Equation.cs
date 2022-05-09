@@ -19,6 +19,7 @@ namespace FiniteElementMethod
             this.d = d;
             this.function = function;
             this.BoundaryConditions = BoundaryConditions;
+            
         }
 
     }

@@ -1,0 +1,273 @@
+\documentclass[12pt,a4paper, twoside]{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage[T1]{fontenc}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\usepackage{amssymb}
+\usepackage[english,ukrainian]{babel}
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{newtxmath}
+\usepackage{geometry}
+\usepackage{graphicx}
+\setlength{\paperwidth}{21cm}          
+\setlength{\paperheight}{29,7cm}      
+\setlength{\textwidth}{15.5cm}        
+\setlength{\textheight}{24.6cm}        
+\setlength{\topmargin}{-1.0cm}          
+\setlength{\oddsidemargin}{0.46cm}   
+\setlength{\evensidemargin}{0.46cm} 
+\usepackage{tempora}
+\usepackage{titlesec}    
+
+\titleformat{\chapter}[display]
+{\normalfont%
+   \Large% 
+    \bfseries}{\chaptertitlename\ \thechapter}{20pt}{%
+    \Large 
+}
+\titleformat*{\section}{\Large\bfseries}
+\titleformat*{\subsection}{\large\bfseries}
+\titleformat*{\subsubsection}{\large\bfseries}
+\titleformat*{\paragraph}{\large\bfseries}
+\titleformat*{\subparagraph}{\large\bfseries}
+
+
+\begin{document}
+\begin{titlepage}
+ \begin{center}
+ {\scshape Міністерство освіти і науки України \\
+ Львівський національний університет імені Івана Франка \\
+  \vspace{0.5cm}
+ Факультет прикладної математики та інформатики \\
+ Кафедра прикладної математики
+  \par}
+  \vspace{4cm}
+ {\Large \bfseries Звіт\\
+ \scshape з курсу:
+ \par }
+ \vspace{0.5cm}
+ {\scshape\Large "Чисельні методи математичної фізики"\\}
+ \vspace{1.5cm}
+ \vspace{2cm}
+ \end{center}
+ \vfill
+
+\begin{flushright}  
+Студентки групи ПМП-42 \\
+Волошко Святослав\\
+Вороняк Олег\\
+Добосевич Богдан-Микола\\
+Доманич Арсен\\
+Олiщук Вячеслав\\ 
+\end{flushright} 
+\begin{flushright} 
+Науковi консультанти\\
+професор Дияк I.I.\\доцент Стягар А.О.
+\end{flushright} 
+\vspace{2cm}
+% Bottom of the page
+\begin{center}
+ {\small  Львів 2022 \par}
+\end{center}
+\end{titlepage}
+
+\tableofcontents
+
+\clearpage
+\addcontentsline{toc}
+
+\section{Постановка задачі}
+{
+Необхідно знайти таку функцію $u \in C^{2}(\bar{\Omega})$, що задовольняє рівняння
+\begin{equation}
+-a_{11} \frac{\partial^{2} u}{\partial x_{1}^{2}}-a_{22} \frac{\partial^{2} u}{\partial x_{2}^{2}}+d u=f,\left(x_{1}, x_{2}\right) \in \Omega,
+\end{equation}
+та граничні умови
+\begin{equation}
+\beta_{i} N u+\sigma_{i}\left(u-u_{c i}\right)=0,\left(x_{1}, x_{2} \in \Gamma_{i}\right),
+\end{equation}
+де
+\begin{equation*}
+N u=a_{11} \frac{\partial u}{\partial x_{1}} \cos \left(\nu, x_{1}\right)+a_{22} \frac{\partial u}{\partial x_{2}} \cos \left(\nu, x_{2}\right),
+\end{equation*}
+\begin{equation*}
+v_{i}=\cos \left(\nu, x_{i}\right)-\text { зовнішня нормаль до границі  } \Gamma=\bigcup_{i} \Gamma_{i}.
+\end{equation*}
+}
+\section{Дослідження оператора крайової задачі}
+{
+\subsection{Симетричність}
+{
+{\bfseriesТеорема 1.} \textit{Оператор $A $ є симетричним, якщо $D_{A} \subset H$  є щільною множиною у просторі $H$ і виконується співвідношення}
+$$
+(A u, v)=(u, A v) \quad \forall(u, v) \in D_{A}.
+$$
+\textit{Доведення}. Оскільки  $C_{0}^{(\infty)} \subset D_{A}$ i $C_{0}^{(\infty)}$ є щільною у даному просторі $W_{2}^{(1)}(\Omega)$ і, як відомо, даний простір є гільбертовим, то множина  $D_{A}$ є щільною у даному просторі.\\\\
+Розглянемо вираз
+$$
+(A u, v)=\int_{\Omega}^{}\left(-a_{11} \frac{\partial^{2} u}{\partial x_{1}^{2}}-a_{22} \frac{\partial^{2} u}{\partial x_{2}^{2}}\right) v d \Omega+d \int_{\Omega} u v d \Omega.
+$$
+Застосуємо формулу Остроградського і отримаємо:
+$$\int_{\Omega}\left(\nu \frac{\partial u}{\partial x_{1}}+u \frac{\partial v}{\partial x_{1}}\right) d \Omega=\int_{\Gamma} u v l_{1} d \Gamma.$$
+Звідси
+\begin{equation}\int_{\Omega} v \frac{\partial u}{\partial x_{1}} d \Omega=-\int_{\Omega} u \frac{\partial v}{\partial x_{1}} d \Omega+\int_{\Gamma} u v l_{1} d \Gamma.\end{equation}
+Підставимо $\psi=u v, \varphi=0$.Отримаємо:
+\begin{equation}\int_{\Omega} v \frac{\partial u}{\partial x_{2}} d \Omega=-\int_{\Omega} u \frac{\partial v}{\partial x_{2}} d \Omega+\int_{\Gamma} u v l_{2} d \Gamma.\end{equation}
+Використовуючи (3) - (4) отримаємо: 
+$$(A u, v)=-a_{11} \int_{\Omega} \frac{\partial u}{\partial x_{1}} \frac{\partial v}{\partial x_{1}} d \Omega-a_{22} \int_{\Omega} \frac{\partial u}{\partial x_{2}} \frac{\partial v}{\partial x_{2}} d \Omega+d \int_{\Omega} u v d \Omega-\frac{\sigma}{\beta} \int_{\Gamma}\left(u-u_{c}\right) v d \Gamma.$$
+Останній вираз є симетричний відносно $u,v$, якщо $u_c=0$, таким чином оператор $A$ є симетричним.
+}
+\subsection{Додатність}
+{
+{\bfseriesТеорема 2.}. \textit{Оператор $A$ є додатним, якщо він є симетричним і виконується умова}
+$$(A u, u) \geq 0 \forall u \in D_{A} \text { i }(A u, u)=0 \Rightarrow u \equiv 0.$$
+\textit{Доведення}. Розглянемо вираз
+$$\begin{aligned}
+&(A u, u)=a 11 \int_{\Omega}^{} \frac{\partial u}{\partial x_{1}} \frac{\partial u}{\partial x_{1}} d \Omega-a 22 \int_{\Omega} \frac{\partial u}{\partial x_{2}} \frac{\partial u}{\partial x_{2}} d \Omega+d \int_{\Omega} u u d \Omega+\frac{\sigma}{\beta} \int_{\Gamma}\left(u-u_{c}\right) u d \Gamma=\\\\
+&=-a 11 \int_{\Omega}^{}\left(\frac{\partial u}{\partial x_{1}}\right)^{2} d \Omega-a 22 \int_{\Omega}^{}\left(\frac{\partial u}{\partial x_{2}}\right)^{2} d \Omega+d \int_{\Omega} u^{2} d \Omega+\frac{\sigma}{\beta} \int_{\Gamma} u^{2} d \Gamma+u_{c} \frac{\sigma}{\beta} \int_{\Gamma} u d \Gamma.
+\end{aligned}$$
+Враховуючи симетричність і невід'ємність підінтегральних функцій маємо, що $u_c=0$. Оскільки підінтегральні функції є невід’ємними, тоді для того щоб $(A u, u) \geq 0$ достатньо, щоб
+$$a 11 \geq 0, a 22 \geq 0, d \geq 0, \delta \geq 0, \beta>0.$$
+Нехай $(A u, u)=0$. 
+$$\begin{aligned}
+\left(\frac{\partial u}{\partial x_{1}}\right)^{2} &=0, \left(\frac{\partial u}{\partial x_{2}}\right)^{2}=0, u^{2}=0 \\
+& \Rightarrow u^{2}=0 \Rightarrow u=0.
+\end{aligned}$$
+Звідси можна зробити висновок, що оператор $A$ є додатним.
+}
+}
+
+
+\section{Варіаційне формулювання}
+{
+Введемо множину $V=\left\{u \in W_{2}^{(1)}(\Omega)\right\}$. Візьмемо деяке $v \in V$, помножимо (1) на $v$ і проінтегруємо результат в області $\Omega$. Отримаємо:
+$$\int_{\Omega}\left(-a_{11} \frac{\partial^{2} u}{\partial x_{1}^{2}}-a_{22} \frac{\partial^{2} u}{\partial x_{2}^{2}}\right) v d \Omega+\int_{\Omega} d u v d \Omega=\int_{\Omega} f v d \Omega,\left(x_{1}, x_{2}\right) \in \Omega.$$
+За формулою Остроградського-Гріна перетворимо перший доданок і отримаємо:
+\begin{equation}\begin{aligned}
+&-a_{11} \int_{\Omega} \frac{\partial u}{\partial x_{1}} \frac{\partial v}{\partial x_{1}} d \Omega-a_{22} \int_{\Omega} \frac{\partial u}{\partial x_{2}} \frac{\partial v}{\partial x_{2}} d \Omega+d \int_{\Omega} u v d \Omega-\\
+&-\frac{\sigma}{\beta} \int_{\Gamma}\left(u-u_{c}\right) v d \Gamma=\int_{\Omega} f v d \Omega.
+\end{aligned}\end{equation}
+}
+
+\section{Чисельні експерименти}
+
+{
+\subsection{Завдання 1}
+{
+Побудуємо аналітичний розв’язок крайової
+задачі (1)-(2) та зробимо оцінку відносної та абсолютної похибок у нормах $L_{2}$ та $W_{2}^{(1)}$.
+Розглянемо задачу (1) з наступними даними
+\begin{equation}a_{11}=1, a_{22}=1, d=1, f=3.\end{equation}
+Розв’язок будемо шукати в прямокутній області $\Omega$.
+На $\Gamma_1$ задамо однорiдну умову Дiрiхле; на $\Gamma_2$ - однорiдну умову Неймана. За цих умов задача зводиться до звичайного диференцiального рiвняння
+$$-1 \frac{d^{2} y}{d x^{1}}+ u=3,$$
+з граничними умовами 
+$$u(a)=0, \quad u(b)=0.$$
+Розв'язок:
+\begin{equation}u(x)=\frac{-3 e^{1-x}-3 e^{x}+3+3 e}{1+e}.\end{equation}
+Область $\Omega$ триангулюємо i будуємо розв’язок методом скiнченних елементiв.\\\\
+Норми обчислюватимуться за наступними формулами:
+\begin{equation}\begin{array}{c}
+\|u\|_{W_{2}^{(1)}}=\sqrt{\int_{\Omega} \left(u^{2}+u^{\prime 2}\right) d \Omega} , \\\\
+\|u\|_{L_{2}}=\sqrt{\int_{\Omega}\left(u^{2}\right) d \Omega.}
+\end{array}\end{equation}
+Враховуючи триангуляцію, норма у просторі $L_2$ матиме вигляд
+$$
+\|u\|_{L_{2}}=\sqrt{\sum_{e=1}^{n} u^2(x_{e}, y_{e}) S_{e}}
+,$$
+де $(x_{e}, y_{e})$ i $S_{e}$ - координати точки перетину медіан і площа трикутного елемента $\Omega_e$ відповідно.\\
+Норма у просторі $W_2^{(1)}$ виглядатиме наступним чином:
+$$
+\|u\|_{W_{2}^{(1)}}=\sqrt{\sum_{e=1}^{n} (u^2(x_{e}, y_{e})+u^{' 2}(x_{e}, y_{e})) S_{e}}.$$\\
+
+Значення абсолютної i вiдносної
+похибки сiткового розв’язку шляхом порiвняння з аналiтичним розв’язком наведені в наступній таблиці.
+\begin{center}
+    $$\begin{array}{|c|c|c|c|c|}
+\hline n & \|u_h-u_{exact}\|_{L_{2}} & \|u_h-u_{exact}\|_{W_{2}^}{(1)} \\
+\hline 
+{36} & {0,0167694446882555} & {0,0850304064352695} \\ 
+{152} & {0,00416111814820238} & {0,0415156846470005}\\
+{622} & {0,00103241205850759} & {0,0189614872237382}\\
+{2444} & {0,0002701884250202} & {0,0102394701565669}\\ 
+\hline\end{array}$$
+\end{center}\\
+}
+\subsection{Завдання 2}
+{
+Зробимо оцінку порядку збіжності числового розв’язку у випадку, коли відомим є точний розв’язок задачі. Використаємо отримані в попередньому завданні значення абсолютних похибок.\\
+Нехай $\delta_h$ та $\delta_{h/2}$ абсолютнi похибки в нормах $L_2$ або $W_2^{(1)}$, обчисленi у
+завданнi 1. Використаємо частковий випадок апрiорних похибок
+$$\delta_{h}=C h^{p}, \quad \delta
+_{h / 2}=C\left(\frac{h}{2}\right)^{p}.$$
+Звiдси отримаємо
+$$p=\frac{\ln \delta_{h}-\ln \delta_{h / 2}}{\ln 2}.$$
+Значення порядків збіжності в просторах наведені в наступній таблиці.
+\begin{center}
+    $$\begin{array}{|c|c|c|c|c|}
+\hline n & \|u_h-u_{exact}\|_{L_{2}} & \|u_h-u_{exact}\|_{W_{2}^}{(1)} & p \text{ в } {L_2} & p \text{ в }W_{2}^{(1)}\\
+\hline
+{36} & {0,0167694446882555} & {0,0850304064352695} & {-} & {-} \\ 
+{152} & {0,00416111814820238} & {0,0415156846470005} & {2,01079175850789} & {1,03432234345411}\\
+{622} & {0,00103241205850759} & {0,0189614872237382} & {2,01095235472069} & {1,13058436547492}\\
+{2444} & {0,0002701884250202} & {0,0102394701565669} & {1,93398112176021} & {0,888931060173303}\\ 
+\hline\end{array}$$
+Порядок збіжності
+\end{center}
+}
+\subsection{Завдання 3}
+{
+Застосуємо схему Ейткена для оцiнки порядку збiжностi у випадку коли аналiтичний розв’язок вiдсутнiй.\\
+Виберемо три сiтки з кроками $h_{1}=h, h_{2}=h / 2, h_{3}=h / 4$.\\
+Обчислимо норми наближеного розв’зку $L_2$ або $W_2^{(1)}$. Позначимо їх $U_{h}, \quad U_{h / 2}, \quad U_{h / 4}$.\\
+Тодi, якщо враховувати головний член похибки $U$, можна записати
+$$\begin{aligned}
+&U=U_{h}+C h^{p},\\
+&U=U_{h / 2}+C \frac{1}{2^{p}} h^{p},\\
+&U=U_{h / 4}+C \frac{1}{4^{p}} h^{p}.
+\end{aligned}$$
+З першого та другого рiвняння маємо
+$$C h^{p}\left(1-\frac{1}{2^{p}}\right)=U_{h / 2}-U_{h}.$$
+З другого та третього рiвняння отримаємо
+$$\frac{1}{2^{p}} C h^{p}\left(1-\frac{1}{2^{p}}\right)=U_{h / 4}-U_{h / 2}.$$
+З двох останнiх рiвнянь матимемо
+$$2^{p}=\frac{U_{h / 2}-U_{h}}{U_{h / 4}-U_{h / 2}}.$$
+Звiдси можемо знайти $p$
+$$p=\frac{1}{\ln 2}\left(\ln \left(u_{h / 2}-u_{h}\right)-\ln \left(u_{h / 4}-u_{h / 2}\right)\right).$$\\
+Значення норм наближеного розв’язку у просторах $L_2$ та $W_2^{(1)}$. Отримані результати показують хороший порядок збіжності, хоча дещо відрізняються від теоретичних значень, а саме порядок збіжності в просторі $L_2$ збігається
+до 1. \\
+Дану проблему потрібно додатково дослідити.
+\begin{center}
+    $$\begin{array}{|c|c|c|c|c|}
+\hline n & \|u_h\|_{L_{2}} & \|u_h\|_{W_{2}^}{(1)} & p \text{ в } {L_2} & p \text{ в }W_{2}^{(1)}\\
+\hline
+{36} & {0,234734921005014} & {0,800613779412838} & {-} & {-} \\ 
+{152} & {0,245224401446447} & {0,819293534046578} & {-} & {-}\\
+{622} & {0,247837308661578} & {0,824103013558215} & {2,00521542070652} & {0,978761413813927}\\
+{2444} & {0,248473038545618} & {0,825334716811595} & {2,03917008262133} & {0,982613026852217}\\ 
+\hline\end{array}$$
+Порядок збіжності за схемою Ейткена
+\end{center}
+}
+}
+
+\clearpage
+\section*{Висновок}
+{
+\addcontentsline{toc}{section}{Висновок}
+
+В ході виконання даного завдання ми розглянули крайову задачу з різноманітними граничними умовами. Під час проведення досліджень оператора задачі отримано можливість доведення його симетричності та додатності. Шляхом нескладних обчислень було отримано аналітичний розв'язок крайової задачі. Проведено оцінку абсолютної та відносної похибок у нормах та оцінку порядку збіжності чисельного розв'язку.
+Ці результати дозволяють нам зробити висновок щодо можливості стверджувати, що метод скінченних елеменів за певних обставин можна вважати достатньо ефективним для отримання чисельного розв'язку крайових задач. Аналогічний висновок можна зробити щодо його зручності.
+}
+
+\clearpage
+\addcontentsline{toc}{section}{Література}
+\begin{thebibliography}{3}
+\bibitem{Савула Я. Г.}
+Савула Я.Г. "Числовий аналіз задач математичної фізики варіаційними
+методами'.
+\end{thebibliography}
+
+\end{document}
